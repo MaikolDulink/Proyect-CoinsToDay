@@ -10,12 +10,20 @@
         <th>Precio</th>
         <th>Cap. de Mercado</th>
         <th>Variación 24hs</th>
-        <td class="hidden sm:block"></td>
+        <td class="hidden sm:block">
+          <input
+            class="bg-gray-100 focus:outline-none border-b border-gray-400 py-2 px-4 block w-full appearance-none leading-normal"
+            id="filter"
+            placeholder="Buscar..."
+            type="text"
+            v-model="filter"
+          />
+        </td>
       </tr>
     </thead>
     <tbody>
       <tr
-        v-for="a in assets"
+        v-for="a in filteredAssets"
         :key="a.id"
         class="border-b border-gray-200 hover:bg-gray-100 hover:bg-orange-100"
       >
@@ -28,45 +36,85 @@
             :alt="a.name"
           />
         </td>
-        <td>{{ a.rank }}</td>
-        <td>{{ a.name }}</td>
+        <td>
+          <b># {{ a.rank }}</b>
+        </td>
+        <td>
+          <router-link
+            class="hover:underline text-green-600"
+            :to="{ name: 'coin-detail', params: { id: a.id } }"
+          >
+            {{ a.name }}
+          </router-link>
+          <small class="ml-1 text-gray-500">
+            {{ a.symbol }}
+          </small>
+        </td>
         <td>{{ a.priceUsd | dollar }}</td>
         <td>{{ a.marketCapUsd | dollar }}</td>
         <td
           :class="
             a.changePercent24Hr.includes('-')
               ? 'text-red-600'
-              : ' text-green-600'
+              : 'text-green-600'
           "
         >
           {{ a.changePercent24Hr | percent }}
         </td>
-        <td class="hidden sm:block"></td>
+        <td class="hidden sm:block">
+          <px-button @custom-click="goToClick(a.id)">
+            <span>Detalle</span>
+          </px-button>
+        </td>
       </tr>
     </tbody>
   </table>
 </template>
 
 <script>
+import PxButton from '@/components/PxButton'
 export default {
-  name: "PxAssetsTable",
-
+  name: 'PxAssetsTable',
+  components: {
+    PxButton
+  },
   props: {
     assets: {
       type: Array,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
-};
+  data() {
+    return {
+      filter: ''
+    }
+  },
+  computed: {
+    filteredAssets() {
+      if (!this.filter) {
+        return this.assets
+      }
+      return this.assets.filter(a => {
+        a.symbol.toLowerCase().includes(this.filter.toLowerCase()) ||
+          a.name.toLowerCase().includes(this.filter.toLowerCase())
+      })
+    }
+  },
+  methods: {
+    goToClick(id) {
+      this.$router.push({ name: 'coin-detail', params: { id } })
+    }
+  }
+}
 </script>
 
 <style scoped>
 .up::before {
-  content: "👆";
+  content: '👆';
 }
 
 .down::before {
-  content: "👇";
+  content: '👇';
 }
 
 td {
