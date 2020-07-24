@@ -10,20 +10,12 @@
         <th>Precio</th>
         <th>Cap. de Mercado</th>
         <th>Variación 24hs</th>
-        <td class="hidden sm:block">
-          <input
-            class="bg-gray-100 focus:outline-none border-b border-gray-400 py-2 px-4 block w-full appearance-none leading-normal"
-            id="filter"
-            placeholder="Buscar..."
-            type="text"
-            v-model="filter"
-          />
-        </td>
+        <td class="hidden sm:block"></td>
       </tr>
     </thead>
     <tbody>
       <tr
-        v-for="a in filteredAssets"
+        v-for="a in assets"
         :key="a.id"
         class="border-b border-gray-200 hover:bg-gray-100 hover:bg-orange-100"
       >
@@ -82,22 +74,6 @@ export default {
     assets: {
       type: Array,
       default: () => []
-    }
-  },
-  data() {
-    return {
-      filter: ''
-    }
-  },
-  computed: {
-    filteredAssets() {
-      if (!this.filter) {
-        return this.assets
-      }
-      return this.assets.filter(a => {
-        a.symbol.toLowerCase().includes(this.filter.toLowerCase()) ||
-          a.name.toLowerCase().includes(this.filter.toLowerCase())
-      })
     }
   },
   methods: {
